@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Book App</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .form, .controls { margin-bottom: 20px; }
+    input, select, button { margin: 5px; padding: 7px; }
+    .grid { display: flex; flex-wrap: wrap; gap: 15px; }
+    .card {
+      width: 180px; padding: 10px; border: 1px solid #ccc;
+      border-radius: 10px; text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    img { width: 100%; height: 200px; object-fit: cover; }
+  </style>
+</head>
+
+<body>
+
+  <button onclick="location.href='index.html'">← Back</button>
+
+  <h2>Book Management</h2>
+
+  <!-- Add Book Form -->
+  <div class="form">
+    <input id="title" placeholder="Title">
+    <input id="author" placeholder="Author">
+    <select id="category">
+      <option value="">Category</option>
+      <option>Fiction</option>
+      <option>Comedy</option>
+      <option>Technical</option>
+    </select>
+    <button onclick="addBook()">Add Book</button>
+  </div>
+
+  <!-- Sort + Filter -->
+  <div class="controls">
+    <button onclick="sortAZ()">Sort A → Z</button>
+    <button onclick="sortZA()">Sort Z → A</button>
+
+    <select id="filter" onchange="render()">
+      <option>All</option>
+      <option>Fiction</option>
+      <option>Comedy</option>
+      <option>Technical</option>
+    </select>
+  </div>
+
+  <div id="grid" class="grid"></div>
+
+<script>
+  let books = [];
+  const img = "https://m.media-amazon.com/images/I/71ZB18P3inL._SY522_.jpg";
+
+  function addBook() {
+    const title = title.value.trim();
+    const author = author.value.trim();
+    const category = category.value;
+
+    if (!title || !author || !category) return alert("Fill all fields");
+
+    books.push({ title, author, category, imageUrl: img });
+    title.value = author.value = "";
+    category.value = "";
+    render();
+  }
+
+  function sortAZ() {
+    books.sort((a, b) => a.title.localeCompare(b.title));
+    render();
+  }
+
+  function sortZA() {
+    books.sort((a, b) => b.title.localeCompare(a.title));
+    render();
+  }
+
+  function deleteBook(i) {
+    books.splice(i, 1);
+    render();
+  }
+
+  function render() {
+    const f = filter.value;
+    const show = books.filter(b => (f === "All" ? true : b.category === f));
+
+    grid.innerHTML = show
+      .map((b, i) => `
+        <div class="card">
+          <img src="${b.imageUrl}">
+          <h4>${b.title}</h4>
+          <p>${b.author}</p>
+          <p>${b.category}</p>
+          <button onclick="deleteBook(${books.indexOf(b)})">Delete</button>
+        </div>
+      `).join("");
+  }
+</script>
+
+</body>
+</html>
